@@ -8,7 +8,7 @@ function setup() {
   createCanvas(400, 400);
   for( let i = 0; i < 10; i++ ) {
     movers.push( 
-      new Mover(random(width),random(height),random(-5,5),random(-5,-5),10,random(colorlist))
+      new Mover(random(width),random(height),random(-1,1),random(-1,1),10,random(colorlist))
     )  
   }
   wind = random(-.2,.2)
@@ -52,7 +52,7 @@ class Mover { // noun
   }
   
   update() {
-    //this.applyGravity()
+    this.applyGravity()
     //this.applyWind()
     this.move()
     this.containWithinWindow()
@@ -82,10 +82,15 @@ class Mover { // noun
     if( this.x < this.r ) { // moved off the left hand side
       this.x = this.r
       this.dx *= -1
+      
+    //add damping:
+      this.dx = Math.sign(this.dx) * Math.max(0, Math.abs(this.dx) - 0.5);
     }
     if( this.x > width - this.r ) { // right
       this.x = width-this.r
       this.dx *= -1
+      //add damping
+       this.dx = Math.sign(this.dx) * Math.max(0, Math.abs(this.dx) - 0.5);
     }
     if( this.y < this.r ) { // top
       this.y = this.r
@@ -94,26 +99,45 @@ class Mover { // noun
     if( this.y > height - this.r ) { // bottom
       this.y = height-this.r
       this.dy *= -1
+      //add damping
+      this.dy = Math.sign(this.dy) * Math.max(0, Math.abs(this.dy) - 0.5);
     }    
-      
+  
   }
   
 applycollision(other) {
     let d = dist(this.x, this.y, other.x, other.y);
     if (d < this.r + other.r) {
+      
+    // only apply collision if they're moving toward each other
+   
+
       this.dx *= -1;
       this.dy *= -1;
       other.dx *= -1;
-      other.dx *= -1;
-      
+      other.dy *= -1;
+    
+      // they're moving away from each other
     //push them apart slightly to avoid instant re-collision
-      let overlap = this.r + other.r - d;
+      let overlap = this.r + other.r - d + 0.5;
+      //add 0.5 so that there is a small buffering
     let angle = atan2(this.y - other.y, this.x - other.x);
-
+    //when there is an overlap, overlap is not zero, it pushes two circle apart
     this.x += cos(angle) * overlap / 2;
     this.y += sin(angle) * overlap / 2;
     other.x -= cos(angle) * overlap / 2;
     other.y -= sin(angle) * overlap / 2;
+      
+// add frictional force, so that when the ball collides, the kinetic energy is wasted, thus the speed decrease by 0.5
+this.dx = Math.sign(this.dx) * Math.max(0, Math.abs(this.dx) - 0.5);
+this.dy = Math.sign(this.dy) * Math.max(0, Math.abs(this.dy) - 0.5);
+other.dx = Math.sign(other.dx) * Math.max(0, Math.abs(other.dx) - 0.9);
+other.dy = Math.sign(other.dy) * Math.max(0, Math.abs(other.dy) - 0.9);
     }
   }
+  
+
+  
+  
+
 }
