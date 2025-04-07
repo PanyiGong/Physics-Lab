@@ -3,6 +3,7 @@ let colorlist = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4
 let movers = []
 let G = 0.1
 let wind 
+let windActive = false;
 
 function setup() {
   createCanvas(400, 400);
@@ -11,12 +12,17 @@ function setup() {
       new Mover(random(width),random(height),random(-1,1),random(-1,1),10,random(colorlist))
     )  
   }
-  wind = random(-.2,.2)
+  
   ellipseMode(RADIUS)
 }
 
 function draw() {
   background(220);
+  
+     windActive = keyIsDown(87);  // 87 is the key code for 'w'
+  if (windActive) {
+    wind = random(-5, 5);  // Change wind direction every frame when 'w' is pressed
+  }
   
   for (let i = 0; i < movers.length; i++) {
     for (let j = i + 1; j < movers.length; j++) {
@@ -30,17 +36,7 @@ function draw() {
   
 }
 
-class Mover { // noun
-  // properties - adjectives
-  //   radius
-  //   velocity (dx,dy)
-  //   position (x,y)
-  //   color
-  // behaviors - verb
-  //   move
-  //   draw
-  //   collide/bounce
-  
+class Mover { 
   // initialize all the properties
   constructor(x,y,dx,dy,r,c) {
     this.x = x
@@ -53,11 +49,11 @@ class Mover { // noun
   
   update() {
     this.applyGravity()
-    //this.applyWind()
+    this.applyWind()
     this.move()
     this.containWithinWindow()
     this.draw()    
-    //this.applycollision()
+    
   }
   
   draw() {
@@ -75,7 +71,9 @@ class Mover { // noun
   }
   
   applyWind() {
-    this.dx += wind
+    if(keyIsDown(87)) { 
+    this.dx += wind;}
+    
   }
   
   containWithinWindow() {
@@ -136,6 +134,11 @@ other.dy = Math.sign(other.dy) * Math.max(0, Math.abs(other.dy) - 0.9);
     }
   }
   
+
+  
+  
+
+
 
   
   
