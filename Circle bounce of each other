@@ -8,7 +8,7 @@ function setup() {
   createCanvas(400, 400);
   for( let i = 0; i < 10; i++ ) {
     movers.push( 
-      new Mover(random(width),random(height),random(-1,1),random(-1,1),10,random(colorlist))
+      new Mover(random(width),random(height),random(-5,5),random(-5,-5),10,random(colorlist))
     )  
   }
   wind = random(-.2,.2)
@@ -17,8 +17,15 @@ function setup() {
 
 function draw() {
   background(220);
+  
+  for (let i = 0; i < movers.length; i++) {
+    for (let j = i + 1; j < movers.length; j++) {
+      movers[i].applycollision(movers[j]);
+    }
+  }
+
   for( let mover of movers ) {
-    mover.update()
+    mover.update();
   }
   
 }
@@ -45,11 +52,12 @@ class Mover { // noun
   }
   
   update() {
-    this.applyGravity()
-    this.applyWind()
+    //this.applyGravity()
+    //this.applyWind()
     this.move()
     this.containWithinWindow()
-    this.draw()     
+    this.draw()    
+    //this.applycollision()
   }
   
   draw() {
@@ -88,5 +96,24 @@ class Mover { // noun
       this.dy *= -1
     }    
       
+  }
+  
+applycollision(other) {
+    let d = dist(this.x, this.y, other.x, other.y);
+    if (d < this.r + other.r) {
+      this.dx *= -1;
+      this.dy *= -1;
+      other.dx *= -1;
+      other.dx *= -1;
+      
+    //push them apart slightly to avoid instant re-collision
+      let overlap = this.r + other.r - d;
+    let angle = atan2(this.y - other.y, this.x - other.x);
+
+    this.x += cos(angle) * overlap / 2;
+    this.y += sin(angle) * overlap / 2;
+    other.x -= cos(angle) * overlap / 2;
+    other.y -= sin(angle) * overlap / 2;
+    }
   }
 }
