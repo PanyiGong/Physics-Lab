@@ -1,0 +1,85 @@
+let mover;
+let colorlist = ['#FF5733', '#33FF57', '#3357FF', '#F0E68C', '#8A2BE2', '#FF6347'];
+
+function setup() {
+  createCanvas(400, 400);
+  mover = Mover.createStandardMoverAt(width / 2, height / 2);  // Initial position at the center
+}
+
+function draw() {
+  background(220);
+  
+  // Handle user input
+  handleInput();
+  
+  // Update and draw the mover
+  mover.update();
+}
+
+  // Mouse control: Let the mover follow the mouse position
+  let mousePos = createVector(mouseX, mouseY);
+  let mouseForce = mousePos.sub(mover.position);
+  mouseForce.limit(1);  // Limit speed for smooth movement
+  mover.applyForce(mouseForce);
+}
+
+class Mover {
+  constructor(x, y, dx, dy, r, c) {
+    this.position = createVector(x, y);
+    this.velocity = createVector(dx, dy);
+    this.acceleration = createVector(0, 0);
+    this.mass = r;
+    this.r = r;
+    this.c = c;
+  }
+
+  update() {
+    this.velocity.add(this.acceleration);
+    this.move();
+    this.containWithinWindow();
+    this.draw();
+    this.acceleration.mult(0);  // Reset acceleration after each update
+  }
+
+  draw() {
+    fill(this.c);
+    circle(this.position.x, this.position.y, this.r);
+  }
+
+  move() {
+    this.position.add(this.velocity);
+  }
+
+  // Apply force (f is a p5.Vector)
+  applyForce(f) {
+    this.acceleration.add(f.copy().div(this.mass));
+  }
+
+  containWithinWindow() {
+    if (this.position.x < this.r) {  // Left boundary
+      this.position.x = this.r;
+      this.velocity.mult(createVector(0, 1));  // Stop movement in x direction
+    }
+    if (this.position.x > width - this.r) {  // Right boundary
+      this.position.x = width - this.r;
+      this.velocity.mult(createVector(0, 1));  // Stop movement in x direction
+    }
+    if (this.position.y < this.r) {  // Top boundary
+      this.position.y = this.r;
+      this.velocity.mult(createVector(1, 0));  // Stop movement in y direction
+    }
+    if (this.position.y > height - this.r) {  // Bottom boundary
+      this.position.y = height - this.r;
+      this.velocity.mult(createVector(1, 0));  // Stop movement in y direction
+    }
+  }
+
+  static createStandardMoverAt(x, y) {
+    return new Mover(
+      x, y,
+      0, 0,  // Initial velocity is zero
+      10,  // Default size (radius)
+      random(colorlist)  // Random color
+    );
+  }
+}
