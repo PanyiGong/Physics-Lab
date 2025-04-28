@@ -9,6 +9,16 @@ function setup() {
 function draw() {
   background(220);
   
+  // Apply gravity force (downward)
+  let gravity = createVector(0, 0.1);  // Small gravity force
+  mover.applyForce(gravity);
+
+  // Apply friction (slows down the mover over time)
+  let friction = mover.velocity.copy();
+  friction.normalize();
+  friction.mult(-0.05);  // Negative friction slows down the mover
+  mover.applyForce(friction);
+
   // Handle user input
   handleInput();
   
