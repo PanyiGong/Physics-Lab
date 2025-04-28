@@ -25,7 +25,25 @@ function draw() {
   // Update and draw the mover
   mover.update();
 }
-
+// Apply forces based on user input
+function handleInput() {
+  if (keyIsDown(LEFT_ARROW)) {
+    let leftForce = createVector(-1, 0);  // Apply a leftward force
+    mover.applyForce(leftForce);
+  }
+  if (keyIsDown(RIGHT_ARROW)) {
+    let rightForce = createVector(1, 0);  // Apply a rightward force
+    mover.applyForce(rightForce);
+  }
+  if (keyIsDown(UP_ARROW)) {
+    let upForce = createVector(0, -1);  // Apply an upward force
+    mover.applyForce(upForce);
+  }
+  if (keyIsDown(DOWN_ARROW)) {
+    let downForce = createVector(0, 1);  // Apply a downward force (gravity overrides this)
+    mover.applyForce(downForce);
+  }
+  
   // Mouse control: Let the mover follow the mouse position
   let mousePos = createVector(mouseX, mouseY);
   let mouseForce = mousePos.sub(mover.position);
